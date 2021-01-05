@@ -50,6 +50,7 @@ public class Project extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @Setter(AccessLevel.NONE)
     private Project parent;
     
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
@@ -68,6 +69,11 @@ public class Project extends BaseEntity{
     
     public void setDescription(String description) {
     	this.description = description != null ? description.trim() : null;
+    }
+
+    public void setParent(Project parent){
+        this.parent = parent;
+        parent.getSubProjects().add(this);
     }
     
     public void moveProject(Project newParent) {

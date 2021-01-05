@@ -136,19 +136,19 @@ class ProjectRepositoryIT {
 	void givenParentAndChilds_whenDeleteParent_thenDeleteChilds() {
 		// Given
 		Project parent = Project.builder().name("parent").build();
-		parent = testEntityManager.persistAndFlush(parent);
+		parent = projectRepository.save(parent);
 		
 		Project child1 = Project.builder().name("child1").build();
 		child1.setParent(parent);
-		child1 = testEntityManager.persistAndFlush(child1);
+		child1 = projectRepository.save(child1);
 		
 		Project child2 = Project.builder().name("child2").build();
 		child2.setParent(parent);
-		child2 = testEntityManager.persistAndFlush(child2);
+		child2 = projectRepository.save(child2);
 		
 		Project child3 = Project.builder().name("child3").build();
 		child3.setParent(parent);
-		child3 = testEntityManager.persistAndFlush(child3);
+		child3 = projectRepository.save(child3);
 		
 		assertTrue(projectRepository.findById(parent.getId()).isPresent());
 		assertTrue(projectRepository.findById(child1.getId()).isPresent());

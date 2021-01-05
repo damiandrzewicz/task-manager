@@ -8,8 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import com.moderndev.taskmanager.domain.Project;
 
+import javax.transaction.Transactional;
+
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>{
 	
 	List<Project> findAllByParentId(Long id);
+
+	@Transactional
+	void deleteById(Long id);
 }
