@@ -12,7 +12,7 @@ class ProjectTest {
 	Project p;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		p = new Project();
 	}
 
@@ -68,9 +68,12 @@ class ProjectTest {
 	void testSetParent() {
 		var parent = Project.builder().name("parent").build();
 		assertNull(p.getParent());
+
 		p.setParent(parent);
+
 		assertEquals(parent, p.getParent());
 		assertEquals("parent", p.getParent().getName());
+		assertTrue(parent.getSubProjects().contains(p));
 	}
 
 	@Test
