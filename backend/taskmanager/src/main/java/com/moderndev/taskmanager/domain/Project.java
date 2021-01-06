@@ -1,9 +1,7 @@
 package com.moderndev.taskmanager.domain;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -54,7 +52,7 @@ public class Project extends BaseEntity{
     private Project parent;
     
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
-    private Set<Project> subProjects = new HashSet<>();
+    private List<Project> subProjects = new ArrayList<>();
 
 
     @Builder

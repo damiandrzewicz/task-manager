@@ -1,28 +1,23 @@
 package com.moderndev.taskmanager.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.moderndev.taskmanager.domain.Project;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.moderndev.taskmanager.domain.Project;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class ProjectRepositoryIT {
@@ -42,7 +37,7 @@ class ProjectRepositoryIT {
 	}
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp(){
 	}
 	
 	@Test
@@ -53,19 +48,15 @@ class ProjectRepositoryIT {
 		testEntityManager.flush();
 		
 		var found = projectRepository.findById(project.getId());
-		if(found.isPresent()) {
-			var saved = found.get();
-			assertThat(saved.getId().equals(project.getId()));
-			assertThat(found.get().getName().equals(project.getName()));
-			assertNull(saved.getDescription());
-			assertNull(saved.getParent());
-		}else {
-			fail("Project not found");
-		}
+		assertTrue(found.isPresent());
+		assertEquals(project.getId(), found.get().getId());
+		assertEquals(project.getName(), found.get().getName());
+		assertNull(found.get().getDescription());
+		assertNull(found.get().getParent());
 	}
 	
 	@Test
-	void saveMinimalEntity() {
+	void givenMinimalProjectWithoutDescription_whenSave_thenReturnOk() {
 		String name = "name";
 		Project project = Project.builder().name(name).build();
 		
@@ -93,18 +84,14 @@ class ProjectRepositoryIT {
 	void givenProjecWithNullName_whenSave_thenThrowException() {
 		Project project = Project.builder().build();
 		
-		assertThrows(ConstraintViolationException.class, () -> {
-			projectRepository.save(project);
-		});
+		assertThrows(ConstraintViolationException.class, () -> projectRepository.save(project));
 	}
 	
 	@Test
 	void givenProjecWithEmptyName_whenSave_thenThrowException() {
 		Project project = Project.builder().name("").build();
 		
-		assertThrows(ConstraintViolationException.class, () -> {
-			projectRepository.save(project);
-		});
+		assertThrows(ConstraintViolationException.class, () -> projectRepository.save(project));
 	}
 	
 	@Test
@@ -236,9 +223,10 @@ class ProjectRepositoryIT {
 		child3 = testEntityManager.persistAndFlush(child3);
 		
 		// When
-		Project foundProject = projectRepository.findById(parent.getId()).get();
-		
+		Optional<Project> byId = projectRepository.findById(parent.getId());
+		assertTrue(byId.isPresent());
+
 		// Then
-		assertThat(foundProject.getSubProjects()).hasSize(3).contains(child1, child2, child3);
+		assertThat(byId.get().getSubProjects()).hasSize(3).contains(child1, child2, child3);
 	}
 }
