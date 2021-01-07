@@ -1,11 +1,9 @@
 package com.moderndev.taskmanager.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDateTime;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProjectTest {
 	
@@ -55,13 +53,6 @@ class ProjectTest {
 		assertNull(p.getParent());
 		assertEquals("testname", p.getName());
 		assertEquals("testdescription", p.getDescription());
-	}
-
-	@Test
-	void testSetCreated() {
-		var created = LocalDateTime.now();
-		p.setCreated(created);
-		assertEquals(created, p.getCreated());
 	}
 
 	@Test

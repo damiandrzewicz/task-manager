@@ -12,7 +12,6 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,13 +70,12 @@ class ProjectRepositoryIT {
 				.name("myname")
 				.description("mydescription")
 				.build();
-		project.setCreated(LocalDateTime.now());
 		
 		Project saved = projectRepository.save(project);
 		assertNotNull(saved.getId());
 		assertEquals(saved.getName(), project.getName());
 		assertEquals(saved.getDescription(), project.getDescription());
-		assertEquals(saved.getCreated(), project.getCreated());
+		assertNotNull(saved.getCreated());
 	}
 	
 	@Test

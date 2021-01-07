@@ -44,6 +44,7 @@ public class Project extends BaseEntity{
 
     @Column
     @CreationTimestamp
+    @Setter(AccessLevel.PACKAGE)
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
