@@ -45,6 +45,11 @@ public class ProjectController {
 		}
 	}
 
+	@GetMapping({"/{id}/subprojects"})
+	public List<ProjectDTO> allSubprojects(@PathVariable Long id){
+		return projectService.findAllByParentId(id);
+	}
+
 	@PutMapping
 	public ProjectDTO updateProject(@Validated(Put.class) @RequestBody ProjectDTO dto) {
 		return projectService.update(dto);

@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -165,6 +166,23 @@ class ProjectControllerTest {
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.message", equalTo("Resource not found")))
+			.andReturn();
+
+		System.out.println(res.getResponse().getContentAsString());
+	}
+
+	@Test
+	void get_findAllByParentId_whenGivenId_thenReturns200() throws Exception {
+		Mockito.when(projectService.findAllByParentId(Mockito.anyLong())).thenReturn(Arrays.asList(
+				ProjectDTO.builder().name("p1").build(),
+				ProjectDTO.builder().name("p1").build(),
+				ProjectDTO.builder().name("p1").build()
+		));
+
+		var res = mockMvc.perform(get(ProjectController.BASE_URL + "/{id}/subprojects", 1L)
+				.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()", equalTo(3)))
 			.andReturn();
 
 		System.out.println(res.getResponse().getContentAsString());
