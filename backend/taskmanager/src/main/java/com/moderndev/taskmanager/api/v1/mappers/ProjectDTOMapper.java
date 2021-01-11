@@ -3,16 +3,13 @@ package com.moderndev.taskmanager.api.v1.mappers;
 import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
 import com.moderndev.taskmanager.domain.BaseEntity;
 import com.moderndev.taskmanager.domain.Project;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true))
 public interface ProjectDTOMapper {
 
     ProjectDTOMapper INSTANCE = Mappers.getMapper(ProjectDTOMapper.class);
@@ -23,13 +20,16 @@ public interface ProjectDTOMapper {
     })
     ProjectDTO toDTO(Project project);
 
-    @Mapping(target = "created", ignore = true)
-    @Mapping(target = "parent", ignore = true)
-    @Mapping(target = "subProjects", ignore = true)
+    @Mappings({
+        @Mapping(source = "id", target = "id")
+    })
     Project fromDTO(ProjectDTO projectDTO);
 
     @Named("parentToDTO")
     default Long parentToDTO(Project project){
+        if(project == null){
+            return null;
+        }
         return project.getId();
     }
 

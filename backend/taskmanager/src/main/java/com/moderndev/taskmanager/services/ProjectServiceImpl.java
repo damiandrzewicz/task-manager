@@ -1,5 +1,7 @@
 package com.moderndev.taskmanager.services;
 
+import com.moderndev.taskmanager.api.v1.mappers.ProjectDTOMapper;
+import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
 import com.moderndev.taskmanager.domain.Project;
 import com.moderndev.taskmanager.repositories.ProjectRepository;
 import com.moderndev.taskmanager.services.exceptions.ResourceNotFoundException;
@@ -7,39 +9,48 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService{
 
 	private final ProjectRepository projectRepository;
 
-	public ProjectServiceImpl(ProjectRepository projectRepository) {
+	private final ProjectDTOMapper mapper;
+
+	public ProjectServiceImpl(ProjectRepository projectRepository, ProjectDTOMapper mapper) {
 		super();
 		this.projectRepository = projectRepository;
+		this.mapper = mapper;
 	}
 
 	@Override
-	public Project save(Project project) {
-		return projectRepository.save(project);
+	public ProjectDTO save(ProjectDTO project) {
+		Project dto = mapper.fromDTO(project);
+		Project saved = projectRepository.save(dto);
+		return mapper.toDTO(saved);
 	}
 
 	@Override
-	public List<Project> findAll() {
-		return projectRepository.findAll();
+	public List<ProjectDTO> findAll() {
+		return projectRepository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
 	@Override
-	public Optional<Project> findById(Long id) {
-		return projectRepository.findById(id);
+	public Optional<ProjectDTO> findById(Long id) {
+		return projectRepository.findById(id).map(mapper::toDTO);
 	}
 
 	@Override
-	public Project update(Project project) {
+	public ProjectDTO update(ProjectDTO project) {
 		if(project == null || project.getId() == null){
 			throw new IllegalArgumentException("Invalid project argument");
 		}
-		if(projectRepository.findById(project.getId()).isPresent()) {
-			return projectRepository.save(project);
+
+		Project dto = mapper.fromDTO(project);
+		if(projectRepository.findById(dto.getId()).isPresent()) {
+			Project save = projectRepository.save(dto);
+			return mapper.toDTO(save);
 		}else{
 			throw new ResourceNotFoundException(String.format("Project for id=[%d] not found", project.getId()));
 		}
@@ -51,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService{
 	}
 
 	@Override
-	public List<Project> findAllByParentId(Long id) {
-		return projectRepository.findAllByParentId(id);
+	public List<ProjectDTO> findAllByParentId(Long id) {
+		return projectRepository.findAllByParentId(id).stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 }

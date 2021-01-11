@@ -1,5 +1,7 @@
 package com.moderndev.taskmanager.services;
 
+import com.moderndev.taskmanager.api.v1.mappers.ProjectDTOMapper;
+import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
 import com.moderndev.taskmanager.domain.Project;
 import com.moderndev.taskmanager.repositories.ProjectRepository;
 import com.moderndev.taskmanager.services.exceptions.ResourceNotFoundException;
@@ -10,9 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,9 @@ class ProjectServiceImplTest {
     @Mock
     ProjectRepository projectRepository;
 
+    @Spy
+    ProjectDTOMapper mapper = ProjectDTOMapper.INSTANCE;
+
     @InjectMocks
     ProjectServiceImpl projectService;
 
@@ -35,18 +40,15 @@ class ProjectServiceImplTest {
     @Test
     void givenProject_whenSave_thenReturnSavedProject() {
         // Given
-        Project project = Project.builder().name("testname").build();
+        ProjectDTO projectDTO = ProjectDTO.builder().name("testname").build();
 
         // When
-        LocalDateTime now = LocalDateTime.now();
         Project returned = Project.builder().name("testname").build();
-        returned.setCreated(now);
         Mockito.when(projectRepository.save(Mockito.any(Project.class))).thenReturn(returned);
 
         // Then
-        Project saved = projectService.save(project);
-        assertEquals(project.getName(), saved.getName());
-        assertEquals(now, saved.getCreated());
+        ProjectDTO saved = projectService.save(projectDTO);
+        assertEquals(projectDTO.getName(), saved.getName());
     }
 
     @Test
@@ -65,8 +67,11 @@ class ProjectServiceImplTest {
         Mockito.when(projectRepository.findAll()).thenReturn(projects);
 
         // Then
-        List<Project> all = projectService.findAll();
-        Assertions.assertThat(all).hasSize(3).contains(project1, project2, project3);
+        List<ProjectDTO> all = projectService.findAll();
+        Assertions.assertThat(all).hasSize(3);
+        assertTrue(all.stream().anyMatch(p -> p.getName().equals(project1.getName())));
+        assertTrue(all.stream().anyMatch(p -> p.getName().equals(project2.getName())));
+        assertTrue(all.stream().anyMatch(p -> p.getName().equals(project3.getName())));
     }
 
     @Test
@@ -79,7 +84,7 @@ class ProjectServiceImplTest {
         Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(project));
 
         // Then
-        Optional<Project> optionalProject = projectService.findById(project.getId());
+        Optional<ProjectDTO> optionalProject = projectService.findById(project.getId());
         assertTrue(optionalProject.isPresent());
         assertEquals(project.getId(), optionalProject.get().getId());
         assertEquals(project.getName(), optionalProject.get().getName());
@@ -91,7 +96,7 @@ class ProjectServiceImplTest {
         Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         // Then
-        Optional<Project> optionalProject = projectService.findById(1L);
+        Optional<ProjectDTO> optionalProject = projectService.findById(1L);
         assertTrue(optionalProject.isEmpty());
     }
 
@@ -105,17 +110,22 @@ class ProjectServiceImplTest {
         updtedProject.setId(1L);
         updtedProject.setName("updatedName");
 
+        ProjectDTO toUpdateProject = ProjectDTO.builder().name("project").build();
+        toUpdateProject.setId(1L);
+        toUpdateProject.setName("updatedName");
+
         // When
         Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(project));
         Mockito.when(projectRepository.save(Mockito.any(Project.class))).thenReturn(updtedProject);
 
         // Then
-        Project returnedProject = projectService.update(updtedProject);
+        ProjectDTO returnedProject = projectService.update(toUpdateProject);
 
         Mockito.verify(projectRepository, Mockito.times(1)).findById(Mockito.anyLong());
         Mockito.verify(projectRepository, Mockito.times(1)).save(Mockito.any(Project.class));
 
-        assertEquals(updtedProject, returnedProject);
+        assertEquals(updtedProject.getId(), returnedProject.getId());
+        assertEquals(updtedProject.getName(), returnedProject.getName());
     }
 
     @Test
@@ -125,7 +135,7 @@ class ProjectServiceImplTest {
 
         // Then
         assertThrows(ResourceNotFoundException.class, () -> {
-            Project project = Project.builder().build();
+            ProjectDTO project = ProjectDTO.builder().build();
             project.setId(1L);
             projectService.update(project);
         });
@@ -140,7 +150,7 @@ class ProjectServiceImplTest {
     @Test
     void givenNotValidProject_whenUpdate_thenThrowsException(){
         // Then
-        assertThrows(IllegalArgumentException.class, () -> projectService.update(Project.builder().build()));
+        assertThrows(IllegalArgumentException.class, () -> projectService.update(ProjectDTO.builder().build()));
     }
 
     @Test
@@ -175,7 +185,10 @@ class ProjectServiceImplTest {
         Mockito.when(projectRepository.findAllByParentId(Mockito.anyLong())).thenReturn(parent.getSubProjects());
 
         // Then
-        List<Project> allByParentId = projectService.findAllByParentId(parent.getId());
-        Assertions.assertThat(allByParentId).hasSize(3).contains(child1, child2, child2);
+        List<ProjectDTO> allByParentId = projectService.findAllByParentId(parent.getId());
+        Assertions.assertThat(allByParentId).hasSize(3);
+        assertTrue(allByParentId.stream().anyMatch(p -> p.getName().equals(child1.getName())));
+        assertTrue(allByParentId.stream().anyMatch(p -> p.getName().equals(child2.getName())));
+        assertTrue(allByParentId.stream().anyMatch(p -> p.getName().equals(child3.getName())));
     }
 }

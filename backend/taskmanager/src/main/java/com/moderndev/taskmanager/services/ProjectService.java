@@ -1,21 +1,21 @@
 package com.moderndev.taskmanager.services;
 
-import com.moderndev.taskmanager.domain.Project;
+import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProjectService{
 
-	Project save(Project project);
+	ProjectDTO save(ProjectDTO project);
 	
-	List<Project> findAll();
+	List<ProjectDTO> findAll();
 	
-	Optional<Project> findById(Long id);
-	
-	Project update(Project project);
+	Optional<ProjectDTO> findById(Long id);
+
+	ProjectDTO update(ProjectDTO project);
 	
 	void deleteById(Long id);
 
-	List<Project> findAllByParentId(Long id);
+	List<ProjectDTO> findAllByParentId(Long id);
 }

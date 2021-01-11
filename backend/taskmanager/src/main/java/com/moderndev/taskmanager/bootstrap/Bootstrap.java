@@ -42,15 +42,7 @@ public class Bootstrap implements CommandLineRunner{
 //
 //        project1 = projectService.save(project1);
 //        project2 = projectService.save(project2);
-		
-		Project parent = Project.builder().name("parent").build();
-		projectRepository.save(parent);
-		
-		Project child = Project.builder().name("child1").build();
-		child.setParent(parent);
-		projectRepository.save(child);
-		
-		projectRepository.delete(parent);
+
 //		
 //		Project found = projectRepository.findById(parent.getId()).get();
 //		
