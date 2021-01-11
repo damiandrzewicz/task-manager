@@ -129,6 +129,39 @@ class ProjectServiceImplTest {
     }
 
     @Test
+    void givenProjectWithWrongParentId_whenSave_thenThrowsException(){
+        // Given
+        ProjectDTO projectDTO = ProjectDTO.builder().build();
+        projectDTO.setId(1L);
+        projectDTO.setName("testname");
+        projectDTO.setParentId(2L);
+
+        // When
+        Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(ResourceNotFoundException.class, () -> projectService.save(projectDTO));
+    }
+
+    @Test
+    void givenProjectWithWrongParentId_whenUpdate_thenThrowsException(){
+        // Given
+        ProjectDTO projectDTO = ProjectDTO.builder().build();
+        projectDTO.setId(1L);
+        projectDTO.setName("testname");
+        projectDTO.setParentId(2L);
+
+        // When
+        Project project = Project.builder().build();
+        project.setId(1L);
+        project.setName("testname");
+        Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(project)).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(ResourceNotFoundException.class, () -> projectService.update(projectDTO));
+    }
+
+    @Test
     void givenNothiing_whenUpdate_thenReturnsResourceNotFoundException(){
         // When
         Mockito.when(projectRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());

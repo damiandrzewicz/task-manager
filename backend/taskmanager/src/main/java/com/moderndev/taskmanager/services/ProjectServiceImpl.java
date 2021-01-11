@@ -26,6 +26,10 @@ public class ProjectServiceImpl implements ProjectService{
 
 	@Override
 	public ProjectDTO save(ProjectDTO project) {
+		if(project.getParentId() != null && projectRepository.findById(project.getParentId()).isEmpty()){
+			throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", project.getParentId(), project.getId()));
+		}
+
 		Project dto = mapper.fromDTO(project);
 		Project saved = projectRepository.save(dto);
 		return mapper.toDTO(saved);
@@ -48,7 +52,12 @@ public class ProjectServiceImpl implements ProjectService{
 		}
 
 		Project dto = mapper.fromDTO(project);
-		if(projectRepository.findById(dto.getId()).isPresent()) {
+		var optionalFound = projectRepository.findById(dto.getId());
+		if(optionalFound.isPresent()) {
+			if(project.getParentId() != null && projectRepository.findById(project.getParentId()).isEmpty()){
+				throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", project.getParentId(), project.getId()));
+			}
+
 			Project save = projectRepository.save(dto);
 			return mapper.toDTO(save);
 		}else{
