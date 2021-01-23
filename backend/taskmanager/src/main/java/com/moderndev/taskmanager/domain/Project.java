@@ -12,8 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 
+import com.moderndev.taskmanager.api.validators.Patch;
+import com.moderndev.taskmanager.api.validators.Post;
+import com.moderndev.taskmanager.api.validators.Put;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -34,7 +37,6 @@ public class Project extends BaseEntity{
 	private static final long serialVersionUID = 1L;
 
     @Column(length = 128, unique = true)
-    @NotBlank(message = "Property 'name' cannot be null or empty")
     @Setter(AccessLevel.NONE)
     private String name;
 
@@ -42,9 +44,7 @@ public class Project extends BaseEntity{
     @Setter(AccessLevel.NONE)
     private String description;
 
-    @Column
-    @CreationTimestamp
-    @Setter(AccessLevel.PACKAGE)
+    @Column(updatable = false)
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,10 +1,9 @@
 package com.moderndev.taskmanager.controllers;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
+import com.moderndev.taskmanager.services.exceptions.ResourceAlreadyExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +20,19 @@ import com.moderndev.taskmanager.services.exceptions.ResourceNotFoundException;
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler{
 
-	@ExceptionHandler({ ResourceNotFoundException.class })
+	@ExceptionHandler({
+			ResourceNotFoundException.class,
+			ResourceAlreadyExistsException.class
+	})
 	public final ResponseEntity<Object> handleCustomException(Exception ex, WebRequest request) throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		
 		if (ex instanceof ResourceNotFoundException) {
 			HttpStatus status = HttpStatus.NOT_FOUND;
 			return handleResourceNotFoundException((ResourceNotFoundException) ex, headers, status, request);
+		}else if(ex instanceof ResourceAlreadyExistsException){
+			HttpStatus status = HttpStatus.CONFLICT;
+			return handleResourceAlreadyExistsException((ResourceAlreadyExistsException) ex, headers, status, request);
 		}else {
 			// Unknown exception, typically a wrapper with a common MVC exception as cause
 			// (since @ExceptionHandler type declarations also match first-level causes):
@@ -44,17 +49,24 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 		
 		return new ResponseEntity<Object>(body, headers, status);
 	}
+
+	public ResponseEntity<Object>  handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex, HttpHeaders headers, HttpStatus status, WebRequest request){
+
+		var body = buildBody("Resource already exists", ex.getMessage());
+
+		return new ResponseEntity<Object>(body, headers, status);
+	}
 	
 	//Overridden exceptions
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		
-		Map<String, String> errors = new HashMap<String, String>();
+		Set<String> errors = new HashSet<>();
 		ex.getBindingResult().getAllErrors().forEach(err -> {
 			String fieldName = ((FieldError)err).getField();
-			String errorMEssage = err.getDefaultMessage();
-			errors.put(fieldName, errorMEssage);
+			String errorMessage = err.getDefaultMessage();
+			errors.add(String.format("'%s' %s", fieldName, errorMessage));
 		});
 		
 		var body = buildBody("Validation error", errors);

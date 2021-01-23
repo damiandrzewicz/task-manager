@@ -1,54 +1,41 @@
 package com.moderndev.taskmanager.repositories;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
+import com.moderndev.taskmanager.domain.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-import com.moderndev.taskmanager.domain.Project;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 @ExtendWith(MockitoExtension.class)
 class ProjectRepositoryTest {
 	
-	@Mock
-	ProjectRepository projectRepository;
-	
-	Project p;
-	
-	
-
+//	@Mock
+//	ProjectRepository projectRepository;
+//
+//	Project p;
+//
+//
+//
 //	@BeforeEach
-//	void setUp() throws Exception {
-//		p = Project.builder().id(1L).name("testname").description("testdescription").build();
+//	void setUp() {
+//		p = Project.builder().name("testname").description("testdescription").build();
+//		p.setId(1L);
 //	}
 //
 //	@Test
 //	void testSave() {
 //
 //		Mockito.when(projectRepository.save(any(Project.class))).thenReturn(p);
-//		
+//
 //		p = projectRepository.save(p);
 //		assertNotNull(p.getId());
 //	}
@@ -59,7 +46,7 @@ class ProjectRepositoryTest {
 //		list.add(p);
 //		Mockito.when(projectRepository.saveAll(any())).thenReturn(list);
 //		var returnedList = projectRepository.saveAll(list);
-//		List<Project> returned = StreamSupport.stream(returnedList.spliterator(), false).collect(Collectors.toList());
+//		List<Project> returned = new ArrayList<>(returnedList);
 //		assertEquals(1, returned.size());
 //	}
 //
@@ -80,37 +67,39 @@ class ProjectRepositoryTest {
 //
 //	@Test
 //	void testFindAll() {
-//		var p1 = Project.builder().id(1L).name("testname1").description("testdescription").build();
-//		var p2 = Project.builder().id(1L).name("testname2").description("testdescription").build();
-//		
+//		var p1 = Project.builder().name("testname1").description("testdescription").build();
+//		p1.setId(1L);
+//
+//		var p2 = Project.builder().name("testname2").description("testdescription").build();
+//		p2.setId(2L);
+//
 //		List<Project> returnSet = new ArrayList<>();
 //		returnSet.add(p1);
 //		returnSet.add(p2);
 //		returnSet.add(p);
-//		
+//
 //		Mockito.when(projectRepository.findAll()).thenReturn(returnSet);
-//		Set<Project> projects = StreamSupport
-//				.stream(projectRepository.findAll().spliterator(), false)
-//				.collect(Collectors.toSet());
+//		Set<Project> projects = new HashSet<>(projectRepository.findAll());
 //		assertEquals(3, projects.size());
 //	}
 //
 //	@Test
 //	void testFindAllById() {
-//		var p1 = Project.builder().id(2L).name("testname1").description("testdescription").build();
-//		var p2 = Project.builder().id(3L).name("testname2").description("testdescription").build();
-//		
+//		var p1 = Project.builder().name("testname1").description("testdescription").build();
+//		p1.setId(2L);
+//
+//		var p2 = Project.builder().name("testname2").description("testdescription").build();
+//		p2.setId(3L);
+//
 //		List<Project> returnSet = new ArrayList<>();
 //		returnSet.add(p1);
 //		returnSet.add(p2);
 //		returnSet.add(p);
-//		
-//		
+//
+//
 //		Mockito.when(projectRepository.findAllById(any())).thenReturn(returnSet);
-//	
-//		Set<Project> projects = StreamSupport
-//				.stream(projectRepository.findAllById(Arrays.asList(1L, 2L, 3L)).spliterator(), false)
-//				.collect(Collectors.toSet());
+//
+//		Set<Project> projects = new HashSet<>(projectRepository.findAllById(Arrays.asList(1L, 2L, 3L)));
 //		assertEquals(3, projects.size());
 //	}
 //
@@ -131,7 +120,7 @@ class ProjectRepositoryTest {
 //		projectRepository.delete(p);
 //		verify(projectRepository).delete(any());
 //	}
-//
-//
+
+
 
 }

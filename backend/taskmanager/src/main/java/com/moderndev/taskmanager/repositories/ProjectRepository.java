@@ -8,6 +8,10 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>{
-	
+
+	boolean existsById(Long id);
+
+	boolean existsByName(String name);
+
 	List<Project> findAllByParentId(Long id);
 }

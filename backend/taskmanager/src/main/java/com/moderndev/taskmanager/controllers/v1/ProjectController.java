@@ -1,6 +1,6 @@
 package com.moderndev.taskmanager.controllers.v1;
 
-import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
+import com.moderndev.taskmanager.api.v1.models.ProjectDto;
 import com.moderndev.taskmanager.api.validators.Post;
 import com.moderndev.taskmanager.api.validators.Put;
 import com.moderndev.taskmanager.services.ProjectService;
@@ -10,12 +10,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping(ProjectController.BASE_URL)
 public class ProjectController {
 	
-	public static final String BASE_URL = "/api/v1/project";
+	public static final String BASE_URL = "/api/v1/projects";
 	
 	private final ProjectService projectService;
 
@@ -26,17 +29,28 @@ public class ProjectController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ProjectDTO saveProject(@Validated(Post.class) @RequestBody ProjectDTO dto) {
+	public ProjectDto saveProject(@Validated(Post.class) @RequestBody ProjectDto dto) {
 		return projectService.save(dto);
 	}
 
 	@GetMapping
-	public List<ProjectDTO> all(){
+	public List<ProjectDto> all(){
 		return projectService.findAll();
 	}
 
+	@GetMapping("/root")
+	public List<ProjectDto> getRootProjects(){
+		return projectService.findAllByParentId(null).stream()
+				.map(p -> {
+					int randomProgress = new Random().nextInt(100);
+					p.setProgress(randomProgress);
+					return p;
+				})
+				.collect(Collectors.toList());
+	}
+
 	@GetMapping({"/{id}"})
-	public ProjectDTO one(@PathVariable Long id) {
+	public ProjectDto one(@PathVariable Long id) {
 		var optional = projectService.findById(id);
 		if(optional.isPresent()) {
 			return optional.get();
@@ -46,12 +60,13 @@ public class ProjectController {
 	}
 
 	@GetMapping({"/{id}/subprojects"})
-	public List<ProjectDTO> allSubprojects(@PathVariable Long id){
-		return projectService.findAllByParentId(id);
+	public List<ProjectDto> allSubprojects(@PathVariable Long id){
+		var roots = projectService.findAllByParentId(id);
+		return roots;
 	}
 
 	@PutMapping
-	public ProjectDTO updateProject(@Validated(Put.class) @RequestBody ProjectDTO dto) {
+	public ProjectDto updateProject(@Validated(Put.class) @RequestBody ProjectDto dto) {
 		return projectService.update(dto);
 	}
 

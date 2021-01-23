@@ -1,12 +1,14 @@
 package com.moderndev.taskmanager.services;
 
-import com.moderndev.taskmanager.api.v1.mappers.ProjectDTOMapper;
-import com.moderndev.taskmanager.api.v1.model.ProjectDTO;
+import com.moderndev.taskmanager.api.v1.mappers.ProjectMapper;
+import com.moderndev.taskmanager.api.v1.models.ProjectDto;
 import com.moderndev.taskmanager.domain.Project;
 import com.moderndev.taskmanager.repositories.ProjectRepository;
+import com.moderndev.taskmanager.services.exceptions.ResourceAlreadyExistsException;
 import com.moderndev.taskmanager.services.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,62 +18,92 @@ public class ProjectServiceImpl implements ProjectService{
 
 	private final ProjectRepository projectRepository;
 
-	private final ProjectDTOMapper mapper;
+	private final ProjectMapper projectMapper;
 
-	public ProjectServiceImpl(ProjectRepository projectRepository, ProjectDTOMapper mapper) {
-		super();
+	public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper) {
 		this.projectRepository = projectRepository;
-		this.mapper = mapper;
+		this.projectMapper = projectMapper;
 	}
 
 	@Override
-	public ProjectDTO save(ProjectDTO project) {
-		if(project.getParentId() != null && projectRepository.findById(project.getParentId()).isEmpty()){
-			throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", project.getParentId(), project.getId()));
+	@Transactional
+	public boolean existsById(Long id){
+		return projectRepository.existsById(id);
+	}
+
+	@Override
+	public boolean existsByName(String name) {
+		return projectRepository.existsByName(name);
+	}
+
+	@Override
+	@Transactional
+	public ProjectDto save(ProjectDto projectDTO) {
+		Project project = projectMapper.fromDto(projectDTO);
+
+		if(projectRepository.existsByName(projectDTO.getName())){
+			throw new ResourceAlreadyExistsException(String.format("Project (name=[%s]) already exists", projectDTO.getName()));
 		}
 
-		Project dto = mapper.fromDTO(project);
-		Project saved = projectRepository.save(dto);
-		return mapper.toDTO(saved);
+		// Check parent project
+		if(projectDTO.getParentId() != null){
+			projectRepository.findById(projectDTO.getParentId()).ifPresentOrElse(p -> project.setParent(p), () -> {
+				throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", projectDTO.getParentId(), projectDTO.getId()));
+			});
+		}
+
+		Project saved = projectRepository.save(project);
+		return projectMapper.fromEntity(saved);
 	}
 
 	@Override
-	public List<ProjectDTO> findAll() {
-		return projectRepository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
+	@Transactional
+	public List<ProjectDto> findAll() {
+		return projectRepository.findAll().stream().map(projectMapper::fromEntity).collect(Collectors.toList());
 	}
 
 	@Override
-	public Optional<ProjectDTO> findById(Long id) {
-		return projectRepository.findById(id).map(mapper::toDTO);
+	@Transactional
+	public Optional<ProjectDto> findById(Long id) {
+		return projectRepository.findById(id).map(projectMapper::fromEntity);
 	}
 
 	@Override
-	public ProjectDTO update(ProjectDTO project) {
-		if(project == null || project.getId() == null){
+	@Transactional
+	public ProjectDto update(ProjectDto projectDTO) {
+		if(projectDTO == null || projectDTO.getId() == null){
 			throw new IllegalArgumentException("Invalid project argument");
 		}
 
-		Project dto = mapper.fromDTO(project);
-		var optionalFound = projectRepository.findById(dto.getId());
-		if(optionalFound.isPresent()) {
-			if(project.getParentId() != null && projectRepository.findById(project.getParentId()).isEmpty()){
-				throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", project.getParentId(), project.getId()));
-			}
+		// Check current project
+		Project foundProject = projectRepository.findById(projectDTO.getId()).orElseThrow(() -> {
+			throw new ResourceNotFoundException(String.format("Project (id=[%d]) not found", projectDTO.getId()));
+		});
 
-			Project save = projectRepository.save(dto);
-			return mapper.toDTO(save);
-		}else{
-			throw new ResourceNotFoundException(String.format("Project for id=[%d] not found", project.getId()));
+		projectMapper.updateFromDto(projectDTO, foundProject);
+
+		// Check parent project
+		if(projectDTO.getParentId() != null){
+			projectRepository.findById(projectDTO.getParentId()).ifPresentOrElse(p -> foundProject.setParent(p), () -> {
+				throw new ResourceNotFoundException(String.format("Parent project (id=[%d]) for project (id=[%d]) not found", projectDTO.getParentId(), projectDTO.getId()));
+			});
 		}
+
+		return projectMapper.fromEntity(projectRepository.save(foundProject));
 	}
 
 	@Override
+	@Transactional
 	public void deleteById(Long id) {
 		projectRepository.deleteById(id);
 	}
 
 	@Override
-	public List<ProjectDTO> findAllByParentId(Long id) {
-		return projectRepository.findAllByParentId(id).stream().map(mapper::toDTO).collect(Collectors.toList());
+	@Transactional
+	public List<ProjectDto> findAllByParentId(Long id) {
+		return projectRepository.findAllByParentId(id)
+				.stream()
+				.map(projectMapper::fromEntity)
+				.collect(Collectors.toList());
 	}
 }
