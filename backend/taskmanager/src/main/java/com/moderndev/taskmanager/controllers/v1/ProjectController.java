@@ -30,6 +30,11 @@ public class ProjectController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ProjectDto saveProject(@Validated(Post.class) @RequestBody ProjectDto dto) {
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return projectService.save(dto);
 	}
 

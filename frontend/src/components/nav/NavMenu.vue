@@ -18,6 +18,7 @@ export default {
   name: "NavMenu",
   data: () => ({
     links: [
+      { text: "Dashboard", icon: "mdi-folder", to: { name: "Dashboard" } },
       { text: "Projects", icon: "mdi-folder", to: { name: "Projects" } }
     ]
   })
