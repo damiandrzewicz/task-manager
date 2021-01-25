@@ -25,10 +25,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectDto {
 
-	@NotNull(groups = {Post.class, Patch.class, Put.class})
+	@NotNull(groups = {Patch.class, Put.class})
 	private Long id;
 
-	@NotNull
 	@NotBlank(groups = {Post.class})
 	@Size(max = 128, groups = {Post.class, Patch.class, Put.class})
     private String name;
@@ -55,5 +54,18 @@ public class ProjectDto {
 		}catch(CloneNotSupportedException ex) {
 			return new ProjectDto(this.id, this.name, this.description, this.created, this.progress, this.parentId, this.subProjectsIds);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "ProjectDto{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", created=" + created +
+				", progress=" + progress +
+				", parentId=" + parentId +
+				", subProjectsIds=" + subProjectsIds +
+				'}';
 	}
 }

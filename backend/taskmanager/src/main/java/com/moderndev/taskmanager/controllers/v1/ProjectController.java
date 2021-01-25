@@ -5,14 +5,17 @@ import com.moderndev.taskmanager.api.validators.Post;
 import com.moderndev.taskmanager.api.validators.Put;
 import com.moderndev.taskmanager.services.ProjectService;
 import com.moderndev.taskmanager.services.exceptions.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Slf4j
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping(ProjectController.BASE_URL)
@@ -30,11 +33,6 @@ public class ProjectController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ProjectDto saveProject(@Validated(Post.class) @RequestBody ProjectDto dto) {
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		return projectService.save(dto);
 	}
 
