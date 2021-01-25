@@ -1,9 +1,9 @@
 <template>
   <div>
       <v-card flat class="my-4">
-          <v-row class="mx-1">
+          <v-row dense class="mx-1">
             <!-- Name  -->
-            <v-col>
+            <v-col class="">
                 <div :class="['caption', showSubitems ? 'white--text' : 'grey--text' ]" >Name</div>
                 <div>{{ project.name }}</div>
             </v-col>

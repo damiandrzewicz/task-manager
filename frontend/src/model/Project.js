@@ -1,14 +1,13 @@
 export class Project{
-    constructor(data = null){
-        this.id = null;
-        this.name = null;
-        this.description = null;
-        this.created = null;
-        this.progress = 0;
-        this.parentId = null;
-        this.subProjectsIds = []
-        
+    id = null;
+    name = null;
+    description = null;
+    created = null;
+    progress = 0;
+    parentId = null;
+    subProjectsIds = []
 
+    constructor(data = null){
         if(data){
             Object.assign(this, data);
         } 

@@ -1,7 +1,7 @@
 <template>
   <v-card>
       <v-form ref="form">
-        <v-row class="mx-1 d-flex align-center">
+        <v-row dense class="mx-1 d-flex align-center">
 
             <!-- Name label  -->
             <v-col class="my-0 py-0">
@@ -48,7 +48,7 @@ export default {
         odAddProject(){
             this.errored = false,
             this.$refs.form.validate();
-            this.$store.dispatch("projectsStore/addProject", {project: this.project})
+            this.$store.dispatch("projectsStore/addProject", {project: this.project.deepCopy()})
                 .catch(err => {
                     this.$log.error(err.response.data);
                     this.$store.dispatch("errorStore/showError", { type: "error", message: "test error message" })
