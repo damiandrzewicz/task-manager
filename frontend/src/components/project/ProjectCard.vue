@@ -150,7 +150,11 @@ export default {
 
         onDeleteProject(){
             this.$log.debug("called")
+            this.$store.dispatch("appStore/setLoading", true)
             this.$store.dispatch("projectsStore/deleteProject", this.project.id)
+                .then(() => {
+                    this.$store.dispatch("appStore/setLoading", false)
+                })
                 .catch(err => {
                     this.$log.error(err.response.data);
                     this.$store.dispatch("errorStore/showError", { type: "error", message: "Cannot add project, check console!" })
@@ -163,11 +167,25 @@ export default {
 
         onToggleSubitems(){
             this.$log.debug("called")
+
             if(!this.project.subProjectsIds.length){
                 this.$log.debug(`no subprojects for project id=${this.project.id}`)
                 return;
             }
-            this.$store.dispatch("projectsStore/loadSubprojects", this.project.id)
+            
+            // Load only when opening
+            if(!this.showSubitems){
+                this.$store.dispatch("appStore/setLoading", true)
+                this.$store.dispatch("projectsStore/loadSubprojects", this.project.id)
+                    .then(() => {
+                        this.$store.dispatch("appStore/setLoading", false)
+                    })
+                    .catch(err => {
+                        this.$log.error(err)
+                        this.$store.dispatch("appStore/showAlert", {type: "error", message: "Cannot load subprojects"})
+                    }) 
+            }
+
             this.showSubitems = !this.showSubitems;
         },
 

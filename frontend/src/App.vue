@@ -9,7 +9,7 @@
       <v-container fluid>
 
         <!-- Loading circle  -->
-        <v-overlay v-if="isLoading" :absolute="true">
+        <v-overlay v-if="isLoading" :absolute="true" >
           <v-progress-circular :size="80" color="primary" indeterminate></v-progress-circular>
         </v-overlay>
 
