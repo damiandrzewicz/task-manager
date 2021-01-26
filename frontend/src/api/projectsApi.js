@@ -31,7 +31,7 @@ class ProjectsApi{
     }
 
     async deleteProject(id){
-        return axios.delete(`${this.host}/${id}`, id).then(res => res.data);
+        return axios.delete(`${this.host}/${id}`).then(res => res.data);
     }
 }
 

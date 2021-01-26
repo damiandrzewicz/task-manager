@@ -2,20 +2,22 @@
   <v-app>
     <HeaderBar/>
     <NavMenu />
-    
-
+  
     <!-- Sizes your content based upon application components -->
     <v-main>
       <!-- Provides the application the proper gutter -->
       <v-container fluid>
+
+        <!-- Loading circle  -->
+        <v-overlay v-if="isLoading" :absolute="true">
+          <v-progress-circular :size="80" color="primary" indeterminate></v-progress-circular>
+        </v-overlay>
+
         <router-view></router-view>
       </v-container>
-
-      
-
     </v-main>
 
-    <GlobalAlert v-if="isError"/>
+    <GlobalAlert v-if="isAlert"/>
   </v-app>
 </template>
 
@@ -37,9 +39,14 @@ export default {
     
   }),
   computed: {
-    isError(){
-        return this.$store.getters["errorStore/isError"];
-      }
+    isAlert(){
+      return this.$store.getters["appStore/isAlert"];
+    },
+    isLoading(){
+      let value =  this.$store.getters["appStore/isLoading"]
+      console.log(value)
+      return value;
+    }
   }
 };
 </script>

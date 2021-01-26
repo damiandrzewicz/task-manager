@@ -21,7 +21,7 @@ export default {
     name: "GlobalAlert",
     computed:{
       errorType(){
-        let value = this.$store.getters["errorStore/errorType"];
+        let value = this.$store.getters["appStore/alertType"];
         if(!isNil(value)){
           return value;
         } else {
@@ -32,7 +32,7 @@ export default {
         return capitalize(this.errorType);
       },
       errorMessage(){
-        let value = this.$store.getters["errorStore/errorMessage"];
+        let value = this.$store.getters["appStore/alertMessage"];
         if(!isNil(value)){
           return capitalize(value)
         } else {
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
       removeError(){
-        this.$store.dispatch("errorStore/removeError");
+        this.$store.dispatch("appStore/removeAlert");
       },
     },
     mounted(){

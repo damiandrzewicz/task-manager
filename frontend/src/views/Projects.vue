@@ -3,53 +3,45 @@
     <!-- Header  -->
     <h1 class="mx-12">Projects</h1>
 
-    <v-container>
-      
-      <!-- Loading  -->
-      <div v-if="isLoading" class="d-flex align-center justify-center flex-column">
-        <v-progress-circular
-          :size="50"
-          color="primary"
-          indeterminate
-        ></v-progress-circular>
-      </div>
-
-      <!-- Error  -->
-      <div v-else-if="isErrored">
-        errored ...
-      </div>
+    <v-container fluid>
 
       <!-- List  -->
-      <div v-else>
+      <div>
         <div v-for="project in getRootProjects" :key="project.id">
-          <ProjectCard :project="project"/>
+            <ProjectCard :project="project"/>
         </div>
-        <AddProjectCard/>
+        <!-- <AddProjectCard/> -->
       </div>
       
     </v-container>
-
-
   </div>
 </template>
 
 <script>
 import ProjectCard from "@/components/project/ProjectCard.vue"
-import AddProjectCard from "@/components/project/AddProjectCard.vue"
+// import AddProjectCard from "@/components/project/AddProjectCard.vue"
 
 export default {
   name: "Projects",
   components: {
     ProjectCard,
-    AddProjectCard
+    // AddProjectCard
   },
   data: () => ({
     loading: false,
     errored: false
   }),
   created(){
-    this.$log.info("Projects");
-    this.$store.dispatch("projectsStore/loadProjects");
+    this.$log.info("projects");
+    this.$store.dispatch("appStore/setLoading", true)
+    this.$store.dispatch("projectsStore/loadRootProjects")
+      .then(() => {
+        this.$store.dispatch("appStore/setLoading", false)
+      })
+      .catch(err => {
+        this.$log.error(err)
+        this.$store.dispatch("appStore/showAlert", {type: "error", message: "Cannot load projects"})
+      })
   },
   mounted(){
 
@@ -58,12 +50,6 @@ export default {
     getRootProjects(){
       return this.$store.getters["projectsStore/rootProjects"]
     },
-    isLoading(){
-      return this.$store.getters["projectsStore/isLoading"]
-    },
-    isErrored(){
-      return this.$store.getters["projectsStore/isErrored"]
-    }
   }
 }
 </script>

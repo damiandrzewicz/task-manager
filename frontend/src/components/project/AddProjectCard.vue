@@ -1,20 +1,22 @@
 <template>
-  <v-card>
+  <v-card flat class="my-3 px-3">
       <v-form ref="form">
-        <v-row dense class="mx-1 d-flex align-center">
+        <v-row dense class="mx-1 pr-5 d-flex align-center">
 
             <!-- Name label  -->
-            <v-col class="my-0 py-0">
+            <v-col md="4" class="my-0 py-0">
                 <v-text-field v-model.trim="project.name" required label="Enter Project Name"></v-text-field>
             </v-col>
 
             <!-- Description label -->
-            <v-col class="my-0 py-0">
+            <v-col md="6" class="my-0 py-0">
                     <v-text-field v-model="project.description" label="Enter Project Description"></v-text-field>
             </v-col>
 
+            
+
             <!-- Confirm button  -->
-            <v-col>
+            <v-col md="2">
                 <v-btn :disabled="!project.name" @click="odAddProject">
                     Add Project
                     <v-icon class="mx-3">mdi-folder-plus</v-icon>
@@ -51,7 +53,7 @@ export default {
             this.$store.dispatch("projectsStore/addProject", {project: this.project.deepCopy()})
                 .catch(err => {
                     this.$log.error(err.response.data);
-                    this.$store.dispatch("errorStore/showError", { type: "error", message: "test error message" })
+                    this.$store.dispatch("appStore/showAlert", { type: "error", message: "Cannot add project!" })
                 })
             
             this.$refs.form.reset();

@@ -5,9 +5,7 @@ import { Project } from "@/model/Project"
 
 //to handle state
 const state = {
-    projects: [],
-    loading: false,
-    errored: false
+    projects: []
 }
 
 //to handle state
@@ -18,32 +16,39 @@ const getters = {
         return state.projects.filter(p => isNull(p.parentId))
     },
 
-    // States 
-    isLoading: state => state.loading,
-    isErrored: state => state.errored,
+    childProjectsForParent: state => id => {
+        return state.projects.filter(p => p.parentId === id)
+    },
 }
 
 //to handle actions
 const actions = {
-    initBeforeLoad({commit}){
-        commit("SET_LOADING", true);
-        commit("SET_ERRORED", false);
-    },
 
-    loadProjects({ commit, dispatch }){
-        dispatch("initBeforeLoad");
-        projectsApi.getProjects()
+
+    loadProjects({ commit }){
+        return projectsApi.getProjects()
             .then(projects => { 
                 var mappedProjects = projects.map(p => new Project(p));
                 Vue.$log.debug(`loaded ${mappedProjects.length} projects`);
                 commit("SET_PROJECTS", mappedProjects);
             })
-            .catch(error => {
-                Vue.$log.error("err: " + error);
-                commit("SET_ERRORED", true)
+    },
+
+    loadRootProjects({commit}){
+        return projectsApi.getRootProjects()
+            .then(projects => {
+                var mappedProjects = projects.map(p => new Project(p));
+                Vue.$log.debug(`loaded ${mappedProjects.length} root projects`);
+                mappedProjects.forEach(p => commit("ADD_PROJECT", p))
             })
-            .finally( () => {
-                commit("SET_LOADING", false)
+    },
+
+    loadSubprojects({commit}, id){
+        return projectsApi.getSubProjects(id)
+            .then(projects => {
+                var mappedProjects = projects.map(p => new Project(p));
+                Vue.$log.debug(`loaded ${mappedProjects.length} subprojects for project id=${id}`);
+                mappedProjects.forEach(p => commit("ADD_PROJECT", p))
             })
     },
 
@@ -55,6 +60,15 @@ const actions = {
                 Vue.$log.debug(`added project: ${JSON.stringify(project)}`);
                 commit("ADD_PROJECT", project);
             })
+    },
+
+    deleteProject({commit}, id){
+        Vue.$log.debug(`delete project: id=${id}`)
+        return projectsApi.deleteProject(id)
+            .then(() => {
+                Vue.$log.debug(`deleted project: id=${id}`)
+                commit("DELETE_PROJECT", id)
+            })
     }
 
 }
@@ -65,20 +79,13 @@ const mutations = {
         state.projects = projects
     },
     ADD_PROJECT(state, project){
-        state.projects.push(project);
-    },
-    REMOVE_PROJECT(state, project){
-        const index = state.projects.indexOf(project);
-        if(index >= -1){
-            state.projects
+        if(!state.projects.find(p => p.id === project.id)){
+            state.projects.push(project);
         }
     },
-    SET_LOADING(state, value){
-        state.loading = value;
+    DELETE_PROJECT(state, id){
+        state.projects = state.projects.filter(p => p.id !== id)
     },
-    SET_ERRORED(state, value){
-        state.errored = value;
-    }
 }
 
 export default {

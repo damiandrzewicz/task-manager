@@ -5,7 +5,7 @@ import Vuex from 'vuex'
 import projectsStore from "@/store/modules/domain/projectsStore"
 
 // App 
-import errorStore from "@/store/modules/app/errorStore"
+import appStore from "@/store/modules/app/appStore"
 
 Vue.use(Vuex)
 
@@ -13,7 +13,7 @@ const debug = process.env.NODE_ENV !== 'production'
 
 export default new Vuex.Store({
   modules: {
-    errorStore,
+    appStore,
 
     projectsStore
   },
