@@ -23,9 +23,7 @@ const getters = {
 
 //to handle actions
 const actions = {
-
-
-    loadProjects({ commit }){
+    loadAllProjects({ commit }){
         return projectsApi.getProjects()
             .then(projects => { 
                 var mappedProjects = projects.map(p => new Project(p));
@@ -43,12 +41,13 @@ const actions = {
             })
     },
 
-    loadSubprojects({commit}, id){
+    loadSubProjects({commit}, id){
         return projectsApi.getSubProjects(id)
             .then(projects => {
                 var mappedProjects = projects.map(p => new Project(p));
                 Vue.$log.debug(`loaded ${mappedProjects.length} subprojects for project id=${id}`);
                 mappedProjects.forEach(p => commit("ADD_PROJECT", p))
+                
             })
     },
 
@@ -79,9 +78,11 @@ const mutations = {
         state.projects = projects
     },
     ADD_PROJECT(state, project){
+        Vue.$log.debug(`projects before: ${state.projects.length}`)
         if(!state.projects.find(p => p.id === project.id)){
             state.projects.push(project);
         }
+        Vue.$log.debug(`projects after: ${state.projects.length}`)
     },
     DELETE_PROJECT(state, id){
         state.projects = state.projects.filter(p => p.id !== id)

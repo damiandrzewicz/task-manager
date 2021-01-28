@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex justify-center" style="z-index: 100;">
+  <div class="d-flex justify-center alert" style="z-index: 100;">
     <v-alert
         border="left"   
         :type="errorType"
@@ -46,7 +46,7 @@ export default {
       },
     },
     mounted(){
-      setTimeout(this.removeError, 5000);
+       setTimeout(this.removeError, 5000);
     }
 }
 </script>

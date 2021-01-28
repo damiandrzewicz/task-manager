@@ -13,9 +13,10 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/projects',
+    path: '/projects/:parentId?/subprojects',
     name: 'Projects',
-    component: Projects
+    component: Projects,
+    // props: true
   },
 ]
 

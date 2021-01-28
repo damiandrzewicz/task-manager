@@ -6,18 +6,19 @@
     <!-- Sizes your content based upon application components -->
     <v-main>
       <!-- Provides the application the proper gutter -->
-      <v-container fluid>
+      <v-container fluid >
 
         <!-- Loading circle  -->
-        <v-overlay v-if="isLoading" :absolute="true" >
+        <v-overlay v-if="isLoading" :absolute="true" color="transparent">
           <v-progress-circular :size="80" color="primary" indeterminate></v-progress-circular>
         </v-overlay>
 
         <router-view></router-view>
       </v-container>
+      <GlobalAlert v-if="isAlert"/>
     </v-main>
 
-    <GlobalAlert v-if="isAlert"/>
+    
   </v-app>
 </template>
 
@@ -50,3 +51,7 @@ export default {
   }
 };
 </script>
+
+<style>
+
+</style>

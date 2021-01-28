@@ -163,6 +163,7 @@ export default {
 
         onOpenProject(){
             this.$log.debug("called")
+            this.$router.push(`/projects/${this.project.id}/subprojects`);
         },
 
         onToggleSubitems(){
@@ -176,7 +177,7 @@ export default {
             // Load only when opening
             if(!this.showSubitems){
                 this.$store.dispatch("appStore/setLoading", true)
-                this.$store.dispatch("projectsStore/loadSubprojects", this.project.id)
+                this.$store.dispatch("projectsStore/loadSubProjects", this.project.id)
                     .then(() => {
                         this.$store.dispatch("appStore/setLoading", false)
                     })
@@ -204,7 +205,8 @@ export default {
                 this.onOpenProject()
             }
         }
-    }
+    },
+
 }
 </script>
 
