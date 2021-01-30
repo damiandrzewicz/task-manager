@@ -29,31 +29,34 @@ public class ProjectController {
 		super();
 		this.projectService = projectService;
 	}
-	
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public ProjectDto saveProject(@Validated(Post.class) @RequestBody ProjectDto dto) {
-		return projectService.save(dto);
-	}
 
 	@GetMapping
-	public List<ProjectDto> all(){
+	public List<ProjectDto> getAllProjects() {
 		return projectService.findAll();
 	}
 
-	@GetMapping("/root")
-	public List<ProjectDto> getRootProjects(){
-		return projectService.findAllByParentId(null).stream()
-				.map(p -> {
-					int randomProgress = new Random().nextInt(100);
-					p.setProgress(randomProgress);
-					return p;
-				})
-				.collect(Collectors.toList());
+//	@GetMapping("/root")
+//	public List<ProjectDto> getRootProjects(){
+//		return projectService.findAllByParentId(null).stream()
+//				.map(p -> {
+//					int randomProgress = new Random().nextInt(100);
+//					p.setProgress(randomProgress);
+//					return p;
+//				})
+//				.collect(Collectors.toList());
+//	}
+
+	@GetMapping({"/{id}/subprojects"})
+	public List<ProjectDto> allProjectsByParentId(@PathVariable Long id){
+		if(id == -1){
+			return projectService.findAllByParentId(null);
+		} else {
+			return projectService.findAllByParentId(id);
+		}
 	}
 
 	@GetMapping({"/{id}"})
-	public ProjectDto one(@PathVariable Long id) {
+	public ProjectDto getProject(@PathVariable Long id) {
 		var optional = projectService.findById(id);
 		if(optional.isPresent()) {
 			return optional.get();
@@ -61,11 +64,11 @@ public class ProjectController {
 			throw new ResourceNotFoundException(String.format("No element for id=[%s]", id));
 		}
 	}
-
-	@GetMapping({"/{id}/subprojects"})
-	public List<ProjectDto> allSubprojects(@PathVariable Long id){
-		var roots = projectService.findAllByParentId(id);
-		return roots;
+	
+	@PostMapping	
+	@ResponseStatus(HttpStatus.CREATED)
+	public ProjectDto saveProject(@Validated(Post.class) @RequestBody ProjectDto dto) {
+		return projectService.save(dto);
 	}
 
 	@PutMapping
@@ -74,7 +77,7 @@ public class ProjectController {
 	}
 
 	@DeleteMapping({"/{id}"})
-	public void deletePRoject(@PathVariable Long id) {
+	public void deleteProject(@PathVariable Long id) {
 		projectService.deleteById(id);
 	}
 
