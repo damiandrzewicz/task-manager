@@ -10,16 +10,16 @@ class ProjectsApi{
         return axios.get(`${this.host}`).then(res => res.data);
     }
 
-    async getRootProjects(){
-        return axios.get(`${this.host}/root`).then(res => res.data);
-    }
+    // async getRootProjects(){
+    //     return axios.get(`${this.host}/root`).then(res => res.data);
+    // }
 
-    async getSubProjects(id){
-        return axios.get(`${this.host}/${id}/subprojects`).then(res => res.data);
-    }
+    // async getSubProjects(id){
+    //     return axios.get(`${this.host}/${id}/subprojects`).then(res => res.data);
+    // }
 
     async getProject(id){
-        return axios.get(`${this.host}/${id}`, id).then(res => res.data);
+        return axios.get(`${this.host}/${id}`).then(res => res.data);
     }
 
     async addProject(project){

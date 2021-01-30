@@ -67,13 +67,13 @@
                             small 
                             v-bind="attrs" 
                             v-on="on" 
-                            @click.stop="onDeleteProject" 
+                            @click.stop="onProjectDetails" 
                             @mousedown.stop
                             :color="showSubitems ? 'white' : ''">
-                            <v-icon>mdi-plus-box</v-icon>
+                            <v-icon>mdi-card-search</v-icon>
                         </v-btn>
                     </template>
-                    <span>Add subproject</span>
+                    <span>Project details</span>
                 </v-tooltip>
             </v-col>
           </v-row>
@@ -92,7 +92,7 @@
 
       <!-- Child projects -->
       <div class="pl-5 mt-5" v-show="showSubitems">
-        <div v-for="project in getChildProjects" :key="project.id">
+        <div v-for="project in getSubProjects" :key="project.id">
             <ProjectCard :project="project"/>
         </div>
         <!-- <AddProjectCard/> -->
@@ -139,8 +139,8 @@ export default {
         computeProgressColor(){
             return getProgressColor(this.project.progress)
         },
-        getChildProjects(){
-            return this.$store.getters["projectsStore/childProjectsForParent"](this.project.id)
+        getSubProjects(){
+            return this.$store.getters["projectsStore/subProjects"](this.project.id);
         }
     },
     methods: {
@@ -161,9 +161,14 @@ export default {
                 })
         },
 
+        onProjectDetails(){
+            this.$log.debug("called")
+            this.$router.push(`/projects/${this.project.id}`);
+        },
+
         onOpenProject(){
             this.$log.debug("called")
-            this.$router.push(`/projects/${this.project.id}/subprojects`);
+            this.$router.push(`/projects/${this.project.id}/list`);
         },
 
         onToggleSubitems(){
@@ -172,19 +177,6 @@ export default {
             if(!this.project.subProjectsIds.length){
                 this.$log.debug(`no subprojects for project id=${this.project.id}`)
                 return;
-            }
-            
-            // Load only when opening
-            if(!this.showSubitems){
-                this.$store.dispatch("appStore/setLoading", true)
-                this.$store.dispatch("projectsStore/loadSubProjects", this.project.id)
-                    .then(() => {
-                        this.$store.dispatch("appStore/setLoading", false)
-                    })
-                    .catch(err => {
-                        this.$log.error(err)
-                        this.$store.dispatch("appStore/showAlert", {type: "error", message: "Cannot load subprojects"})
-                    }) 
             }
 
             this.showSubitems = !this.showSubitems;

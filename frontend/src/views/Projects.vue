@@ -5,21 +5,20 @@
 
     <v-container fluid >
 
+      <!-- Navigation -->
+      <Breadcrumb :items="getBreadcrumbs" />
+
       <!-- List  -->
-      <div>
-        <div v-for="project in projects" :key="project.id">
-            <ProjectCard :project="project"/>
-        </div>
-        <!-- <AddProjectCard/> -->
-      </div>
+      <ProjectsList :projects="getSubProjects"/>
       
     </v-container>
   </div>
 </template>
 
 <script>
-import ProjectCard from "@/components/project/ProjectCard.vue"
-// import AddProjectCard from "@/components/project/AddProjectCard.vue"
+import Breadcrumb from "@/components/nav/Breadcrumb"
+import ProjectsList from "@/components/project/ProjectsList"
+
 
 import isNil from 'lodash/isNil';
 import { loadingOn, loadingOff, alert } from "@/utils/globals"
@@ -27,71 +26,66 @@ import { loadingOn, loadingOff, alert } from "@/utils/globals"
 export default {
   name: "Projects",
   components: {
-    ProjectCard,
-  },
-  props: {
+    Breadcrumb,
+    ProjectsList,
   },
   data: () => ({
-    projects: null
+    breadcrumbs: [
+      { path: `/`, name: `test`}
+    ],
+    
   }),
   created(){
     this.$log.info("projects");
-    this.loadPage();
   },
   mounted(){
-
+    this.fetchProjects();
   },
   computed: {
 
-  },
-  methods: {
-    parentId(){
-      return this.$route.params.parentId;
+    getSubProjects(){
+        return this.$store.getters["projectsStore/subProjects"](this.getRouteProjectId());
     },
-    // API wrappers
-    fetchRootProjects(){
-      loadingOn()
-      this.$store.dispatch("projectsStore/loadRootProjects")
-        .then(() => {
-          loadingOff()
-          
-          this.projects = this.$store.getters["projectsStore/rootProjects"];
-          this.$log.debug(`loading roots: ${this.projects.length} for ${this.parentId()}`)
-        })
-        .catch(err => {
-          this.$log.error(err)
-          alert("error", "Cannot load projects")
-        })
-    },
-    fetchSubProjects(){
-      loadingOn()
-      this.$store.dispatch("projectsStore/loadSubProjects", this.parentId())
-        .then(() => {
-          loadingOff()
-          
-          this.projects = this.$store.getters["projectsStore/childProjectsForParent"](  parseInt(this.parentId(), 10))
-          this.$log.debug(`loading subs: ${this.projects.length} for ${this.parentId()}`)
-        })
-        .catch(err => {
-          this.$log.error(err)
-          alert("error", "Cannot load projects")
-        })
-    },
-    loadPage(){
-      this.$log.debug("exec")
-      if(isNil(this.parentId())){
-        this.fetchRootProjects()
-      }else {
-        this.fetchSubProjects()
+
+    getBreadcrumbs(){
+      let breadcrumbs = []
+      let buildBreadcrumbObject = (project) => ({ name: project.name, path: this.getBreadcrumbPath(project.id) })
+      const id = this.getRouteProjectId();
+      let project = this.$store.getters["projectsStore/projectById"](id);
+      while(!isNil(project)){
+        breadcrumbs.unshift(buildBreadcrumbObject(project))
+        project = this.$store.getters["projectsStore/projectById"](project.parentId);
       }
+      breadcrumbs.unshift(buildBreadcrumbObject({ name: "Roots", id: null }))
+      return breadcrumbs;
     }
   },
-  watch:{
-      "$route.params.parentId"() {
-          this.$log.debug(`projectId changed`)
-          this.loadPage();
-      }
-  }
+  methods: {
+
+    // Routes
+    getRouteProjectId(){
+      const id = this.$route.params.projectId;
+      return !isNil(id) ? parseInt(id, 10) : null
+    },
+
+    // API
+    fetchProjects(){
+      loadingOn()
+      this.$store.dispatch("projectsStore/loadAllProjects")
+        .then(() => {
+          loadingOff()
+        })
+        .catch(err => {
+          this.$log.error(err)
+          alert("error", "Cannot load projects")
+        })
+    },
+
+    // Helpers
+    getBreadcrumbPath(id){
+      return isNil(id) ? `/projects/list` : `/projects/${id}/list`
+    }
+  },
 }
 </script>
 

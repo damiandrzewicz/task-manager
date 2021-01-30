@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import Project from "@/views/Project.vue"
 import Projects from "@/views/Projects.vue"
 import Dashboard from "@/views/Dashboard.vue"
 
@@ -13,10 +14,15 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/projects/:parentId?/subprojects',
+    path: '/projects/:projectId?/list',
     name: 'Projects',
     component: Projects,
     // props: true
+  },
+  {
+    path: '/projects/:projectId',
+    name: 'Project',
+    component: Project
   },
 ]
 
