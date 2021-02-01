@@ -7,7 +7,15 @@
 
 <script>
 export default {
-
+  name: "HeaderBar",
+  computed: {
+    getCurrentRouteName(){
+      return this.$route.name
+    },
+    isProjectsRoute(){
+      return this.getCurrentRouteName === "Projects"
+    }
+  },
 }
 </script>
 

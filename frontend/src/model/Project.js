@@ -5,7 +5,8 @@ export class Project{
     created = null;
     progress = 0;
     parentId = null;
-    subProjectsIds = []
+    subProjectsIds = [];
+    abbreveation = null
 
     constructor(data = null){
         if(data){

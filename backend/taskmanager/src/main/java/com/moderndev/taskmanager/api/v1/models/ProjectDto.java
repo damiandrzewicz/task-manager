@@ -35,10 +35,10 @@ public class ProjectDto {
 	@Size(max = 1024, groups = {Post.class, Patch.class, Put.class})
     private String description;
     
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@Builder.Default
-    private LocalDateTime created = LocalDateTime.now();
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	//@Builder.Default
+    private LocalDateTime created;
 
     @Size(min = 0, max = 100)
     private int progress;
@@ -47,12 +47,14 @@ public class ProjectDto {
 
     private List<Long> subProjectsIds;
 
+    private String abbreveation;
+
 	@Override
 	public ProjectDto clone(){
 		try {
 			return (ProjectDto) super.clone();
 		}catch(CloneNotSupportedException ex) {
-			return new ProjectDto(this.id, this.name, this.description, this.created, this.progress, this.parentId, this.subProjectsIds);
+			return new ProjectDto(this.id, this.name, this.description, this.created, this.progress, this.parentId, this.subProjectsIds, this.abbreveation);
 		}
 	}
 

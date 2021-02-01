@@ -2,6 +2,14 @@
   <v-app>
     <HeaderBar/>
     <NavMenu />
+
+    <!-- Hidden dialogs -->
+    <ProjectDialog 
+      v-if="getProjectDialogProperties.show"
+      :show="getProjectDialogProperties.show" 
+      :mode="getProjectDialogProperties.data.mode" 
+      :projectId="getProjectDialogProperties.data.projectId" 
+    />
   
     <!-- Sizes your content based upon application components -->
     <v-main>
@@ -27,13 +35,16 @@ import HeaderBar from "@/components/nav/HeaderBar.vue"
 import NavMenu from "@/components/nav/NavMenu.vue"
 import GlobalAlert from "@/components/dialogs/GlobalAlert"
 
+import ProjectDialog from "@/components/project/ProjectDialog"
+
 export default {
   name: 'App',
 
   components: {
     HeaderBar,
     NavMenu,
-    GlobalAlert
+    GlobalAlert,
+    ProjectDialog
   },
 
   data: () => ({
@@ -47,7 +58,12 @@ export default {
       let value =  this.$store.getters["appStore/isLoading"]
       console.log(value)
       return value;
-    }
+    },
+
+    
+    getProjectDialogProperties(){
+      return this.$store.getters["appStore/projectDialogProperties"]
+    },
   }
 };
 </script>

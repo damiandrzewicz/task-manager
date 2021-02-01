@@ -17,8 +17,6 @@ public interface ProjectService{
 	List<ProjectDto> findAll();
 	
 	Optional<ProjectDto> findById(Long id);
-
-	ProjectDto update(ProjectDto project);
 	
 	void deleteById(Long id);
 

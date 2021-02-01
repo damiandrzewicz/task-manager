@@ -23,6 +23,10 @@ const getters = {
     subProjects: state => id => {
         return state.projects.filter(p => p.parentId === id)
     },
+
+    abbreveations: state => state.projects
+        .filter(p => p.abbreveation)
+        .map(p => p.abbreveation)
 }
 
 //to handle actions
@@ -40,7 +44,7 @@ const actions = {
             .then(p => {
                 let mapped = new Project(p)
                 Vue.$log.debug(`loaded project`);
-                commit("INSERT_OR_REPLACE_PROJECT", mapped);
+                commit("ADD_OR_UPDATE_PROJECT", mapped);
             })
     },
 
@@ -63,13 +67,13 @@ const actions = {
     //         })
     // },
 
-    addProject({commit}, payload){
+    saveProject({commit}, payload){
         Vue.$log.debug(`add project: ${JSON.stringify(payload.project)}`)
-        return projectsApi.addProject(payload.project)
+        return projectsApi.saveProject(payload.project)
             .then(p => {
                 let project = new Project(p);
                 Vue.$log.debug(`added project: ${JSON.stringify(project)}`);
-                commit("ADD_PROJECT", project);
+                commit("ADD_OR_UPDATE_PROJECT", project);
             })
     },
 
@@ -94,10 +98,14 @@ const mutations = {
             state.projects.push(project);
         //}
     },
-    INSERT_OR_REPLACE_PROJECT(state, project){
+    ADD_OR_UPDATE_PROJECT(state, project){
         const index = state.projects.findIndex(p => p.id === project.id)
         if(index !== -1){
-            state.projects[index] = project
+            state.projects = [
+                ...state.projects.slice(0, index),
+                project,
+                ...state.projects.slice(index + 1)
+            ]
         } else {
             state.projects.push(project);
         }

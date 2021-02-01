@@ -32,7 +32,7 @@ public class Bootstrap implements CommandLineRunner{
 		);
 
 		project3.setParentId(project2.getId());
-		projectService.update(project3);
+		projectService.save(project3);
 
 		ProjectDto project4 = projectService.save(
 				ProjectDto.builder().name("Child project3").description("some description2").build()
@@ -48,8 +48,8 @@ public class Bootstrap implements CommandLineRunner{
 
 		project5.setParentId(project4.getId());
 		project6.setParentId(project4.getId());
-		projectService.update(project5);
-		projectService.update(project6);
+		projectService.save(project5);
+		projectService.save(project6);
 
         System.out.println("Bootstrap::run");
 		

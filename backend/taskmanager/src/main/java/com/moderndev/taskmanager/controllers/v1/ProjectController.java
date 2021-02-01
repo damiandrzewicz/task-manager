@@ -32,7 +32,13 @@ public class ProjectController {
 
 	@GetMapping
 	public List<ProjectDto> getAllProjects() {
-		return projectService.findAll();
+		return projectService.findAll().stream()
+				.map(p -> {
+					int randomProgress = new Random().nextInt(100);
+					p.setProgress(randomProgress);
+					return p;
+				})
+				.collect(Collectors.toList());
 	}
 
 //	@GetMapping("/root")
@@ -71,10 +77,10 @@ public class ProjectController {
 		return projectService.save(dto);
 	}
 
-	@PutMapping
-	public ProjectDto updateProject(@Validated(Put.class) @RequestBody ProjectDto dto) {
-		return projectService.update(dto);
-	}
+//	@PutMapping
+//	public ProjectDto updateProject(@Validated(Put.class) @RequestBody ProjectDto dto) {
+//		return projectService.update(dto);
+//	}
 
 	@DeleteMapping({"/{id}"})
 	public void deleteProject(@PathVariable Long id) {

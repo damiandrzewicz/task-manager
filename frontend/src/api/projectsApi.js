@@ -22,13 +22,13 @@ class ProjectsApi{
         return axios.get(`${this.host}/${id}`).then(res => res.data);
     }
 
-    async addProject(project){
+    async saveProject(project){
         return axios.post(`${this.host}`, project).then(res => res.data);
     }
 
-    async updateProject(project){
-        return axios.put(`${this.host}`, project).then(res => res.data);
-    }
+    // async updateProject(project){
+    //     return axios.put(`${this.host}`, project).then(res => res.data);
+    // }
 
     async deleteProject(id){
         return axios.delete(`${this.host}/${id}`).then(res => res.data);

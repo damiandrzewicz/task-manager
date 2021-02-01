@@ -55,6 +55,9 @@ public class Project extends BaseEntity{
     @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
     private List<Project> subProjects = new ArrayList<>();
 
+    @Column
+    private String abbreveation;
+
 
     @Builder
 	public Project(String name, String description) {

@@ -6,7 +6,13 @@ const state = {
             type: null,
             message: null
         },
-        loading: false
+        loading: false,
+    },
+    view: {
+        projectDialog: {
+            show: false,
+            data: null
+        }
     }
 }
 
@@ -15,6 +21,8 @@ const getters = {
     alertType: state => {return !isNil(state.globals.alert.type) ? state.globals.alert.type : ""} ,
     alertMessage: state => { return !isNil(state.globals.alert.message) ? state.globals.alert.message : "" },
     isLoading: state => { return state.globals.loading},
+
+    projectDialogProperties: state => { return state.view.projectDialog }
 }
 
 const actions = {
@@ -28,6 +36,14 @@ const actions = {
     },
     setLoading({commit}, value){
         commit("SET_LOADING", value)
+    },
+
+    setProjectDialogProperties({commit}, payload){
+        if(payload.show){
+            commit("SET_PROJECT_DIALOG_PROPERTIES", { show: payload.show, data: payload.data })
+        } else {
+            commit("SET_PROJECT_DIALOG_PROPERTIES", { show: false, data: null })
+        }
     }
 }
 
@@ -40,6 +56,10 @@ const mutations = {
     },
     SET_LOADING(state, value){
         state.globals.loading = value;
+    },
+
+    SET_PROJECT_DIALOG_PROPERTIES(state, value){
+        state.view.projectDialog = value
     }
 }
 
